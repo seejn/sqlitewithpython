@@ -54,7 +54,7 @@ class SqliteDB:
 
         return
 
-    # DATA MANIPULATION: CREATE TABLE, ALTER TABLE, RENAME COLUMN, DROP TABLE, SHOW TABLE
+    # DATA DEFINATION: CREATE TABLE, ALTER TABLE, RENAME COLUMN, DROP TABLE, SHOW TABLE
     @handle_exception
     def create_table(self, table_name, fields_in_tuple):
         '''
