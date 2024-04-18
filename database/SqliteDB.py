@@ -71,6 +71,9 @@ class SqliteDB:
         self.cursor().execute(f"CREATE TABLE {table_name}{fields_in_tuple}") 
         self.commit()
 
+        print(f"-- Created Table: {table_name} --")
+        print("\n")
+
         return
 
     @handle_exception
@@ -82,6 +85,9 @@ class SqliteDB:
         self.cursor().execute(f"DROP TABLE {table_name}")
         self.commit()
 
+        print(f"-- Deleted Table: {table_name} --")
+        print("\n")
+
         return
 
     def drop_tables(self, tables_in_tuple):
@@ -91,7 +97,7 @@ class SqliteDB:
         '''
         for table in tables_in_tuple:
             self.drop_table(table)
-        
+
         return
 
     def show_tables(self):
@@ -100,9 +106,15 @@ class SqliteDB:
             displays all the tables in database
         '''
         self.cursor().execute("SELECT name FROM sqlite_master WHERE type='table';")
-        
+        tables = self.cursor().fetchall()
+
         print("Tables: ")
-        for table in self.cursor().fetchall():
+
+        if not len(tables):
+            print("!!! No tables created !!!")
+            return
+
+        for table in tables:
             print(table[0])
 
         return
