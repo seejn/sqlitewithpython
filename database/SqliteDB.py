@@ -165,14 +165,31 @@ class SqliteDB:
 
         if not id:
             sql = f"SELECT {fields} FROM {table_name}"
-            self.cursor().execute(sql);
+            self.cursor().execute(sql)
             result = [list(value) for value in self.cursor().fetchall()]
         else:
             sql = f"SELECT {fields} FROM {table_name} where id = ?"
-            self.cursor().execute(sql, (id, ));
+            self.cursor().execute(sql, (id, ))
             result = list(self.cursor().fetchone())
 
         return result
+
+    @handle_exception
+    def delete_data(self, table_name, id = None):
+
+        if not id:
+            sql = f"DELETE FROM {table_name}"
+            self.cursor().execute(sql)
+        elif len(id) == 1:
+            sql = f"DELETE FROM {table_name} where id = ?"
+            self.cursor().execute(sql, (id, ))
+        else:
+            sql = f"DELETE FROM {table_name} where id = ?"
+            self.cursor().executemany(sql, id)
+
+        self.commit()
+        
+        return
 
     # initial testing database method
 

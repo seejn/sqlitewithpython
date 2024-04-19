@@ -20,7 +20,12 @@ def get_data(db):
     fields = ('name','id')
     id = 6
 
-    return db.get_data(table_name, fields, id)
+    return db.get_data(table_name, fields)
+
+def delete_data(db):
+    table_name = "users"
+
+    db.delete_data(table_name)
 
 def main():
     conn = sqlite3.connect("test.db")
@@ -30,6 +35,10 @@ def main():
     table_name = "users"
     fields = ('id INTEGER PRIMARY KEY AUTOINCREMENT', 'name TEXT', 'email TEXT')
 
+    '''
+    DATA DEFINITION METHODS
+    '''
+
     # db.create_table(table_name, fields)
 
     # db.drop_table(table_name)
@@ -38,9 +47,16 @@ def main():
 
     # db.show_tables()
 
+
+    '''
+    DATA MANIPULATION METHODS
+    '''
+
     # insert(db)
 
-    print(get_data(db))
+    # print(get_data(db))
+
+    delete_data(db)
 
     db.close()
     # 
