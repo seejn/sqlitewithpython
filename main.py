@@ -24,8 +24,9 @@ def get_data(db):
 
 def delete_data(db):
     table_name = "users"
+    id = [19, 21]
 
-    db.delete_data(table_name)
+    db.delete_data(table_name, id)
 
 def main():
     conn = sqlite3.connect("test.db")
@@ -54,9 +55,9 @@ def main():
 
     # insert(db)
 
-    # print(get_data(db))
+    print(get_data(db))
 
-    delete_data(db)
+    # delete_data(db)
 
     db.close()
     # 

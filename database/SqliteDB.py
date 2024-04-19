@@ -180,12 +180,13 @@ class SqliteDB:
         if not id:
             sql = f"DELETE FROM {table_name}"
             self.cursor().execute(sql)
-        elif len(id) == 1:
+        elif isinstance(id, int):
             sql = f"DELETE FROM {table_name} where id = ?"
             self.cursor().execute(sql, (id, ))
         else:
             sql = f"DELETE FROM {table_name} where id = ?"
-            self.cursor().executemany(sql, id)
+            ids = [(i, ) for i in id]
+            self.cursor().executemany(sql, ids)
 
         self.commit()
         
