@@ -68,7 +68,7 @@ class SqliteDB:
         returns:
             None
         '''
-        self.cursor().execute(f"CREATE TABLE {table_name}{fields_in_tuple}") 
+        self.cursor().execute(f"CREATE TABLE IF NOT EXISTS {table_name}({', '.join(fields_in_tuple)})")
         self.commit()
 
         print(f"-- Created Table: {table_name} --")
@@ -81,8 +81,11 @@ class SqliteDB:
         '''
         parameters:
             table_name: name of a table to drop
+
+        description:
+            drops the table
         '''
-        self.cursor().execute(f"DROP TABLE {table_name}")
+        self.cursor().execute(f"DROP TABLE IF EXISTS {table_name}")
         self.commit()
 
         print(f"-- Deleted Table: {table_name} --")
@@ -94,6 +97,9 @@ class SqliteDB:
         '''
         parameter:
             tables: takes tables in tuple
+
+        description:
+            drops multiple tables at once
         '''
         for table in tables_in_tuple:
             self.drop_table(table)
@@ -119,7 +125,15 @@ class SqliteDB:
 
         return
 
-    # DATA MANIPULATION 
+    # DATA MANIPULATION: INSERT, SELECT, UPDATE, DELETE
+    @handle_exception
+    def insert_data(self, table_name, values):
+        sql = f"INSERT INTO {table_name}(name, email) VALUES(?, ?)"
+
+        self.cursor().executemany(sql, values)
+        self.commit()
+
+        return
 
 
     # initial testing database method
