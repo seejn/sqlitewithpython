@@ -135,6 +135,44 @@ class SqliteDB:
 
         return
 
+    # @handle_exception
+    # def get_all_data(self, table_name, fields = '*'):
+
+    #     if not fields  == '*':
+    #         fields = ', '.join(fields)
+
+    #     sql = f"SELECT {fields} FROM {table_name}"
+
+    #     self.cursor().execute(sql);
+
+    #     return list(self.cursor().fetchall())
+
+    @handle_exception
+    def get_data(self, table_name, fields = '*', id = None):
+        
+        '''
+        parameters:
+
+        description:
+            can fetch all data and data based on id            
+        
+        returns:
+            result: data fetched is converted to list
+        '''
+
+        if not fields  == '*':
+            fields = ', '.join(fields)
+
+        if not id:
+            sql = f"SELECT {fields} FROM {table_name}"
+            self.cursor().execute(sql);
+            result = [list(value) for value in self.cursor().fetchall()]
+        else:
+            sql = f"SELECT {fields} FROM {table_name} where id = ?"
+            self.cursor().execute(sql, (id, ));
+            result = list(self.cursor().fetchone())
+
+        return result
 
     # initial testing database method
 

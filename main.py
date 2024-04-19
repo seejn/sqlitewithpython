@@ -14,6 +14,14 @@ def insert(db):
     db.insert_data(table_name, values)
 
     return
+
+def get_data(db):
+    table_name = "users"
+    fields = ('name','id')
+    id = 6
+
+    return db.get_data(table_name, fields, id)
+
 def main():
     conn = sqlite3.connect("test.db")
     db = SqliteDB(conn)
@@ -29,6 +37,10 @@ def main():
     # db.drop_tables(tables)
 
     # db.show_tables()
+
+    # insert(db)
+
+    print(get_data(db))
 
     db.close()
     # 
