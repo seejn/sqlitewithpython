@@ -15,14 +15,35 @@ def insert(db):
 
     return
 
-def get_data(db):
+def get(db):
     table_name = "users"
     fields = ('name','id')
     id = 6
 
-    return db.get_data(table_name, fields)
+    return db.get_data(table_name)
 
-def delete_data(db):
+def update(db):
+    table_name = "users"
+
+    # fields and new data can be in list or tuple
+    fields = ('name', 'email')
+
+
+    # last element must be id of row to update
+    # eg: ('new_value', 'new_value', id_of_row_to_update)
+
+    # for updating single value only, set in tuple
+    single_data = ("seejn1", "seejn@gmail.com", 20)
+
+    # for updating multiple values, set in list of tuples
+    multiple_data = [
+        ("seejn1", "seejn1@gmail.com", 20),
+        ("seejn2", "seejn2@gmail.com", 22),
+    ]
+
+    return db.update_data(table_name, fields, single_data)
+
+def delete(db):
     table_name = "users"
     id = [19, 21]
 
@@ -55,9 +76,11 @@ def main():
 
     # insert(db)
 
-    print(get_data(db))
 
-    # delete_data(db)
+    update(db)
+    print(get(db))
+
+    # delete(db)
 
     db.close()
     # 

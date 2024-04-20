@@ -175,6 +175,28 @@ class SqliteDB:
         return result
 
     @handle_exception
+    def update_data(self, table_name, fields, new_data):
+        
+        if isinstance(new_data, list) or isinstance(new_data, tuple):
+            
+            fields = [f"{field} = ?" for field in fields]
+            sql = f"UPDATE {table_name} SET {(', ').join(fields)} WHERE id = ?"
+
+            if isinstance(new_data, list):
+                self.cursor().executemany(sql, new_data)
+            else:
+                print(type(new_data))
+                self.cursor().execute(sql, new_data)
+
+            self.commit()
+
+        else:
+            print("datatype mismatched: type should be tuple or list")
+            return
+
+        return
+
+    @handle_exception
     def delete_data(self, table_name, id = None):
 
         if not id:
