@@ -30,7 +30,7 @@
     - curr_table: name of table to rename
     - new_table: name of new table name
 - description:
-    - renames the tables
+    - renames the table
 - returns:
     - None
 
@@ -40,7 +40,7 @@
     - new_column: name of column to add
     - definition: datatype and contraints of new table
 - description:
-    - adds new column to the tables
+    - adds new column to the table
 - returns:
     - None
 
@@ -80,7 +80,7 @@
 - parameters: 
     - table_name: name of table to insert data at
     - data: data to insert
-        - data needs to be in dictionary 
+        - data needs to be in key: value pair [ dictionary ]  
 - description:
     - adds new column to the tables
 - returns:
@@ -92,7 +92,7 @@
     - data: data to insert
         - data needs to be list of dictionary 
 - description:
-    - adds new column to the tables
+    - adds multiple data to the table
 - returns:
     - None
 
@@ -103,7 +103,7 @@
 - description:
     - selects data from table with given condition
 - returns:
-    - None
+    - result: fetched data from the table
 
 ## get_data
 - parameters:
