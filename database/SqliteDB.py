@@ -20,7 +20,7 @@ class SqliteDB:
     # database methods
     def cursor(self):
         '''
-            return:
+            returns:
                 cursor
         '''
         return self.__cursor
@@ -77,6 +77,68 @@ class SqliteDB:
         return
 
     @handle_exception
+    def rename_table(self, curr_table, new_table):
+        '''
+        parameters: 
+            curr_table: name of table to rename
+            new_table: name of new table name
+
+        description:
+            renames the tables
+
+        returns:
+            None
+        '''
+        sql = f"ALTER TABLE {curr_table} RENAME TO {new_table}"
+        self.cursor().execute(sql)
+        self.commit()
+        
+        return
+
+    
+    @handle_exception
+    def add_new_column(self, table_name, new_column, definition):
+        '''
+        parameters: 
+            table_name: table to add new column at
+            new_column: name of column to add
+            definition: datatype and contraints of new table
+
+        description:
+            adds new column to the tables
+
+        returns:
+            None
+        '''
+        sql = f"ALTER TABLE {table_name} ADD COLUMN {new_column} {definition}"
+        self.cursor().execute(sql)
+        self.commit()
+        
+        return
+
+    
+    @handle_exception
+    def rename_column(self, table_name, curr_name, new_name):
+        '''
+        parameters: 
+            table_name: name of table containing the column to rename
+            curr_column: current name of column
+            new_name: new name of column
+
+        description:
+            renames column in a table
+
+        returns:
+            None
+        '''
+        sql = f"ALTER TABLE {table_name} RENAME COLUMN {curr_name} TO {new_name}"
+        print(sql)
+        self.cursor().execute(sql)
+        self.commit()
+        
+        return
+
+    @handle_exception
     def drop_table(self, table_name):
         '''
         parameters:
@@ -84,6 +146,9 @@ class SqliteDB:
 
         description:
             drops the table
+
+        returns:
+            None
         '''
         self.cursor().execute(f"DROP TABLE IF EXISTS {table_name}")
         self.commit()
@@ -93,6 +158,7 @@ class SqliteDB:
 
         return
 
+    @handle_exception
     def drop_tables(self, tables_in_tuple):
         '''
         parameter:
@@ -100,16 +166,23 @@ class SqliteDB:
 
         description:
             drops multiple tables at once
+
+        returns:
+            None
         '''
         for table in tables_in_tuple:
             self.drop_table(table)
 
         return
 
+    @handle_exception
     def show_tables(self):
         '''
         description: 
             displays all the tables in database
+        
+        returns:
+            None
         '''
         self.cursor().execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = self.cursor().fetchall()
@@ -127,12 +200,43 @@ class SqliteDB:
 
     # DATA MANIPULATION: INSERT, SELECT, UPDATE, DELETE
     @handle_exception
-    def insert_data(self, table_name, values):
-        sql = f"INSERT INTO {table_name}(name, email) VALUES(?, ?)"
+    def insert_data(self, table_name, data):
+        '''
+        parameters: 
+            table_name: name of table to insert data at
+            data: data to insert
+                - data needs to be in dictionary 
 
-        self.cursor().executemany(sql, values)
+        description:
+            adds new column to the tables
+
+        returns:
+            None
+        '''
+        fields = ', '.join(list(data.keys()))
+        values = list(data.values())
+        sql = f"INSERT INTO {table_name}({fields}) VALUES(?, ?)"
+        self.cursor().execute(sql, values)
         self.commit()
+        
+        return
 
+    @handle_exception
+    def insert_multiple_data(self, table_name, data):
+        '''
+        parameters: 
+            table_name: name of table to insert data at
+            data: data to insert
+                - data needs to be list of dictionary 
+
+        description:
+            adds new column to the tables
+
+        returns:
+            None
+        '''
+        for i in data:
+            self.insert_data(table_name, i)
         return
 
     # @handle_exception
@@ -148,10 +252,37 @@ class SqliteDB:
     #     return list(self.cursor().fetchall())
 
     @handle_exception
-    def get_data(self, table_name, fields = '*', id = None):
+    def select_where(self, table_name, condition):
+        '''
+        parameters: 
+            table_name: name of table to get data from
+            condition: condition query to select data
+
+        description:
+            selects data from table with given condition
+
+        returns:
+            None
+        '''
+        sql = f"SELECT * FROM {table_name} WHERE {condition}"
+
+        self.cursor().execute(sql)
         
+        result = [list(value) for value in self.cursor().fetchall()]
+        result = result[0] if len(result) == 1 else result
+
+        self.commit()
+        return result
+
+    @handle_exception
+    def get_data(self, table_name, fields = '*', id = None):
         '''
         parameters:
+            table_name: name of table to get data from
+            fields: columns in table consisting of data
+                - default (*): selects all fields if fields is not passed
+            id: id of row to select 
+                - default (None): selects all row if id is not passed
 
         description:
             can fetch all data and data based on id            
@@ -176,7 +307,25 @@ class SqliteDB:
 
     @handle_exception
     def update_data(self, table_name, fields, new_data):
+        '''
+        parameters:
+            table_name: name of table to update data
+            fields: columns where data to be updated
+                - fields can be in tuple or list
+                - eg: ('field1', 'field2' ... 'fieldn')
+            new_data:  new_values to overwrite
+                - values respective to fields defined
+                    - eg: ('value1', 'value2' ... 'valuen', id)
+                    - last element must be id for selection (mandatory)
+                - for updating single row, new_data type: tuple
+                - for updating multiple row, new_data: list of tuple
+
+        description:
+            update the values of row/rows in table            
         
+        returns:
+            None
+        '''
         if isinstance(new_data, list) or isinstance(new_data, tuple):
             
             fields = [f"{field} = ?" for field in fields]
@@ -198,7 +347,18 @@ class SqliteDB:
 
     @handle_exception
     def delete_data(self, table_name, id = None):
-
+        '''
+        parameters:
+            table_name: name of table to delete data from
+            id: id of row to delete
+                default (None): deletes every row in a table
+                type(id) -> int: deletes the passed id row
+                type(id) -> list: multiple ids and deletes specified id's row
+        definition:
+            deletes data from table
+        returns:
+            None
+        '''
         if not id:
             sql = f"DELETE FROM {table_name}"
             self.cursor().execute(sql)
