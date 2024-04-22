@@ -2,16 +2,24 @@ import sqlite3
 from database.SqliteDB import SqliteDB
 
 def insert(db):
-    # values needs to be list for single or multiple 
-    values = [
-        ("Sijan1", "seejnmaharjan@gmail.com"),
-        ("Sijan2", "seejnmaharjan@gmail.com"),
-        ("Sijan3", "seejnmaharjan@gmail.com"),
-        ("Sijan4", "seejnmaharjan@gmail.com"),
+    # values needs to be list of dictionary for multiple insertion
+    # dictionary: key value pair for single insertion 
+    
+    # key = column, value = column_data
+    data = [
+        {
+            "name": "ram",
+            "email": "ram@gmail.com"
+        },
+        {
+            "name": "shyam",
+            "email": "shyam@gmail.com"
+        }
     ]
 
     table_name = "users"
-    db.insert_data(table_name, values)
+    # db.insert_data(table_name, data)
+    db.insert_multiple_data(table_name, data)
 
     return
 
@@ -45,9 +53,14 @@ def update(db):
 
 def delete(db):
     table_name = "users"
-    id = [19, 21]
+    # id = [24, 25, 26]
 
-    db.delete_data(table_name, id)
+    db.delete_data(table_name)
+
+def select_where(db):
+    table_name = "users"
+    where = "name LIKE 's%' OR email = 'seejn@gmail.com'" 
+    result = db.select_where(table_name, where)
 
 def main():
     conn = sqlite3.connect("test.db")
@@ -67,20 +80,27 @@ def main():
 
     # db.drop_tables(tables)
 
+    # db.rename_table("userss", "users")
+    # db.add_new_column("users", "location", "TEXT")
+    # db.rename_column("users","locations", "location")
     # db.show_tables()
+
 
 
     '''
     DATA MANIPULATION METHODS
     '''
 
-    # insert(db)
+    insert(db)
 
 
-    update(db)
+    # update(db)
+    # delete(db)
+
+    # select_where(db)
+
     print(get(db))
 
-    # delete(db)
 
     db.close()
     # 
