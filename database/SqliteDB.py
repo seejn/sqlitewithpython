@@ -81,10 +81,10 @@ class SqliteDB:
         '''
         parameters: 
             curr_table: name of table to rename
-            new_table: name of new table name
+            new_table: name of new table
 
         description:
-            renames the tables
+            renames the table
 
         returns:
             None
@@ -105,7 +105,7 @@ class SqliteDB:
             definition: datatype and contraints of new table
 
         description:
-            adds new column to the tables
+            adds new column to the table
 
         returns:
             None
@@ -205,10 +205,10 @@ class SqliteDB:
         parameters: 
             table_name: name of table to insert data at
             data: data to insert
-                - data needs to be in dictionary 
+                - data needs to be in key: value pair [ dictionary ] 
 
         description:
-            adds new column to the tables
+            adds new data to the table
 
         returns:
             None
@@ -230,7 +230,7 @@ class SqliteDB:
                 - data needs to be list of dictionary 
 
         description:
-            adds new column to the tables
+            adds multiple data to the table
 
         returns:
             None
@@ -262,7 +262,7 @@ class SqliteDB:
             selects data from table with given condition
 
         returns:
-            None
+            result: fetched data from the table
         '''
         sql = f"SELECT * FROM {table_name} WHERE {condition}"
 
@@ -289,19 +289,22 @@ class SqliteDB:
         
         returns:
             result: data fetched is converted to list
+                    - if no data found returns None
         '''
-
         if not fields  == '*':
             fields = ', '.join(fields)
 
-        if not id:
+        if id is not None and not id:
+            result = None
+        elif id is None:
             sql = f"SELECT {fields} FROM {table_name}"
             self.cursor().execute(sql)
             result = [list(value) for value in self.cursor().fetchall()]
         else:
             sql = f"SELECT {fields} FROM {table_name} where id = ?"
             self.cursor().execute(sql, (id, ))
-            result = list(self.cursor().fetchone())
+            data = self.cursor().fetchone()
+            result = list(data) if data else data 
 
         return result
 
@@ -334,7 +337,6 @@ class SqliteDB:
             if isinstance(new_data, list):
                 self.cursor().executemany(sql, new_data)
             else:
-                print(type(new_data))
                 self.cursor().execute(sql, new_data)
 
             self.commit()
